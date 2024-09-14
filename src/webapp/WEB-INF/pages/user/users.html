@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <style>
+        th, td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Users</h1>
+    <div th:if="${#lists.isEmpty(users)}">
+        <p>There are no users!</p>
+    </div>
+    <div th:unless="${#lists.isEmpty(users)}">
+        <table th:border="1" style="width:300px">
+            <thead>
+                <tr>
+                    <th>User id</th>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Email</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.firstName}"></td>
+                    <td th:text="${user.lastName}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.age}"></td>
+                    <td>
+                        <form th:method="get" th:action="@{/edit}" style="display:inline;">
+                            <input type="hidden" name="id" th:value="${user.id}"/>
+                            <button type="submit">Edit</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+        <form th:method="get" th:action="@{/new}">
+            <button type="submit">Add new user</button>
+        </form>
+</body>
+</html>
