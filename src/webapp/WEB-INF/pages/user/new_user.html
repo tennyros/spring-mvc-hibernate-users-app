@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html" charset="UTF-8">
     <title>New user</title>
 </head>
 <body>
-    <form th:method="post" th:action="@{/save}" th:object="${user}" style="display:inline;">
-        <label for="firstName">Enter first name:</label>
-        <input type="text" th:field="*{firstName}" id="firstName">
+    <form th:method="post" th:action="@{/save}" th:object="${user}"  style="display:inline;">
+        <div>
+            <label for="firstName">Enter first name:</label>
+            <input type="text" th:field="*{firstName}" id="firstName">
+        </div>
+        <div>
+            <label for="lastName">Enter last name:</label>
+            <input type="text" th:field="*{lastName}" id="lastName">
+        </div>
+        <div>
+            <label for="email">Enter email:</label>
+            <input type="text" th:field="*{email}" id="email">
+        </div>
+        <div>
+            <label for="age">Enter age:</label>
+            <input type="number" th:field="*{age}" id="age">
+        </div>
         <br>
-        <label for="lastName">Enter last name:</label>
-        <input type="text" th:field="*{lastName}" id="lastName">
-        <br>
-        <label for="email">Enter email:</label>
-        <input type="text" th:field="*{email}" id="email">
-        <br>
-        <label for="age">Enter age:</label>
-        <input type="text" th:field="*{age}" id="age">
-        <br><br>
         <input type="submit" value="Create"/>
     </form>
+
     <form th:method="get" th:action="@{/}" style="display:inline;">
         <button type="submit">Return to user list</button>
     </form>
+
+    <div th:if="${errors}">
+        <ul>
+            <li th:each="error : ${errors}" th:text="${error.defaultMessage}" style="color: red;"></li>
+        </ul>
+    </div>
 </body>
 </html>

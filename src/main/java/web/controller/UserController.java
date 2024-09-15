@@ -3,21 +3,24 @@ package web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
+import web.validator.UserValidator;
 
 @Controller
 public class UserController {
 
     private final UserService userService;
+    private final UserValidator userValidator;
     private static final String REDIRECT = "redirect:/";
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserValidator userValidator) {
         this.userService = userService;
+        this.userValidator = userValidator;
     }
 
     @GetMapping(value = "/")
@@ -36,9 +39,16 @@ public class UserController {
     public String saveUser(@RequestParam(value = "firstName") String firstName,
                            @RequestParam(value = "lastName") String lastName,
                            @RequestParam(value = "email") String email,
-                           @RequestParam(value = "age") int age, Model model) {
+                           @RequestParam(value = "age", required = false) Integer age,
+                           Model model) {
         User user = new User(firstName, lastName, email, age);
-        model.addAttribute("user", user);
+        BindingResult result = new BeanPropertyBindingResult(user, "user");
+        userValidator.validate(user, result);
+        if (result.hasErrors()) {
+            model.addAttribute("user", user);
+            model.addAttribute("errors", result.getAllErrors());
+            return "user/new_user";
+        }
         userService.addUser(user);
         return REDIRECT;
     }
@@ -54,13 +64,20 @@ public class UserController {
                              @RequestParam("firstName") String firstName,
                              @RequestParam("lastName") String lastName,
                              @RequestParam("email") String email,
-                             @RequestParam("age") int age) {
+                             @RequestParam(value = "age", required = false) Integer age,
+                             Model model) {
         User user = userService.getUserById(id);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
         user.setAge(age);
-
+        BindingResult result = new BeanPropertyBindingResult(user, "user");
+        userValidator.validate(user, result);
+        if (result.hasErrors()) {
+            model.addAttribute("errors", result.getFieldErrors());
+            model.addAttribute("user", user);
+            return "user/update_user";
+        }
         userService.updateUser(user);
         return REDIRECT;
     }
@@ -70,4 +87,6 @@ public class UserController {
         userService.deleteUser(id);
         return REDIRECT;
     }
+
+//    private boolean isValidUserProps(User user, Model model) {}
 }
