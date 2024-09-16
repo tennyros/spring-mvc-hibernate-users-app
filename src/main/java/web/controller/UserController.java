@@ -45,8 +45,8 @@ public class UserController {
         BindingResult result = new BeanPropertyBindingResult(user, "user");
         userValidator.validate(user, result);
         if (result.hasErrors()) {
+            model.addAttribute("errors", result.getFieldErrors());
             model.addAttribute("user", user);
-            model.addAttribute("errors", result.getAllErrors());
             return "user/new_user";
         }
         userService.addUser(user);
@@ -87,6 +87,4 @@ public class UserController {
         userService.deleteUser(id);
         return REDIRECT;
     }
-
-//    private boolean isValidUserProps(User user, Model model) {}
 }
