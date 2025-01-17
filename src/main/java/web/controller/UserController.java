@@ -1,5 +1,6 @@
 package web.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import web.model.User;
 import web.service.UserService;
 import web.validator.UserValidator;
 
+@Slf4j
 @Controller
 public class UserController {
 
@@ -26,6 +28,7 @@ public class UserController {
     @GetMapping(value = "/")
     public String showUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
+        log.info("Got all users.");
         return "user/users";
     }
 
@@ -47,9 +50,11 @@ public class UserController {
         if (result.hasErrors()) {
             model.addAttribute("errors", result.getFieldErrors());
             model.addAttribute("user", user);
+            log.error("Error has occurred while adding new user: {}", result.getFieldErrors());
             return "user/new_user";
         }
         userService.addUser(user);
+        log.info("New user has saved.");
         return REDIRECT;
     }
 
@@ -76,15 +81,20 @@ public class UserController {
         if (result.hasErrors()) {
             model.addAttribute("errors", result.getFieldErrors());
             model.addAttribute("user", user);
+            log.error("Error has occurred while editing user: {}", result.getFieldErrors());
             return "user/update_user";
         }
         userService.updateUser(user);
+        log.info("User has updated.");
         return REDIRECT;
     }
 
     @PostMapping(value = "/delete")
     public String deleteUser(@RequestParam(value = "id") Long id) {
         userService.deleteUser(id);
+        log.info("User has deleted.");
         return REDIRECT;
     }
 }
+
+
